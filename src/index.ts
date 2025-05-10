@@ -22,10 +22,6 @@ enum MathResult {
   Draw = "D",
 }
 
-const printMatchResult = () {
-
-}
-
 let manUnitedWins = 0;
 
 for (let match of matches) {
