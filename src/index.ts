@@ -1,12 +1,3 @@
-import fs from "fs";
-
-const matches = fs
-  .readFileSync("football.csv", {
-    encoding: "utf-8",
-  })
-  .split("\n")
-  .map((row) => row.split(","));
-
 // enums = enumeration
 /**
  * Enums:
@@ -16,20 +7,27 @@ const matches = fs
  * Use whenever we have a small fixed set of values that are all closely related and known at compile time
  */
 
-enum MathResult {
-  HomeWin = "H",
-  AwayWin = "A",
-  Draw = "D",
-}
+import { WinAnalysis } from "./analyzers/WinAnalysis";
+import { CsvFileReader } from "./CsvFileReader";
+import { MatchReader } from "./MatchReader";
+import { ConsoleReport } from "./reports/ConsoleReport";
+import { HtmlReport } from "./reports/HtmlReport";
+import { Summary } from "./Summary";
 
-let manUnitedWins = 0;
+//Create an object that satisfies the 'DataReader' interface
+const csvFileReader = new CsvFileReader("football.csv");
+//Create an instance of MatchReader and pass in something satisfying
+//The 'DataReader' interface
+const matchReader = new MatchReader(csvFileReader);
+matchReader.load();
 
-for (let match of matches) {
-  if (match[1] === "Man United" && match[5] === MathResult.HomeWin) {
-    manUnitedWins++;
-  } else if (match[2] === "Man United" && match[5] === MathResult.AwayWin) {
-    manUnitedWins++;
-  }
-}
+const summary = new Summary(new WinAnalysis("Man United"), new HtmlReport());
 
-console.log(`Man United won ${manUnitedWins} games`);
+summary.buildAndPrintReport(matchReader.matches);
+
+//Generics
+/**
+ * Like function arguments, but for types in class/function definitions
+ * Allow us to define the type of a property/argument/return at the future point
+ * Used heavily when writing reusable code
+ */
